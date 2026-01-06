@@ -1,0 +1,81 @@
+#include <iostream>
+#include <vector>
+#include <fstream>
+
+using namespace std;
+
+struct Order {
+    int orderId;
+    string customerName;
+    int items;
+    double price;
+};
+
+int main() {
+    vector<Order> orderList;
+    int n;
+
+    cout << "Enter number of orders: ";
+    cin >> n;
+
+    for (int i = 0; i < n; i++) {
+        Order o;
+
+        cout << "\nEnter Order ID: ";
+        cin >> o.orderId;
+
+        cout << "Enter Customer Name: ";
+        cin.ignore();
+        getline(cin, o.customerName);
+
+        do {
+            cout << "Enter number of items: ";
+            cin >> o.items;
+        } while (o.items <= 0);
+
+        do {
+            cout << "Enter price per item: ";
+            cin >> o.price;
+        } while (o.price <= 0);
+
+        orderList.push_back(o);
+    }
+
+    ofstream fout("priority_orders.txt");
+    if (!fout) {
+        cout << "File error." << endl;
+        return 0;
+    }
+
+    for (int i = 0; i < orderList.size(); i++) {
+        double total = orderList[i].items * orderList[i].price;
+        if (total > 5000) {
+            fout << orderList[i].orderId << " "
+                 << orderList[i].customerName << " "
+                 << total << endl;
+        }
+    }
+
+    fout.close();
+
+    ifstream fin("priority_orders.txt");
+    if (!fin) {
+        cout << "File error." << endl;
+        return 0;
+    }
+
+    int id;
+    string name;
+    double amount;
+
+    cout << "\nPriority Orders:\n";
+
+    while (fin >> id >> name >> amount) {
+        cout << "Order ID: " << id
+             << " Customer: " << name
+             << " Total Amount: " << amount << endl;
+    }
+
+    fin.close();
+    return 0;
+}
